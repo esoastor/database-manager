@@ -23,4 +23,22 @@ class Connector
         $statement = $this->pdo->prepare($query);
         $statement->execute($fieldValues);
     }
+
+    # by one field
+    public function find(array $field): array
+    {
+        $result = [];
+
+        $fieldName = array_keys($field)[0];
+
+        $query = "SELECT * FROM $this->tableName WHERE $fieldName=:$fieldName";
+
+        $statement = $this->pdo->prepare($query);
+        
+        foreach ($field as $fieldName => $fieldValue) {
+            $statement->execute([$fieldName => $fieldValue]);
+        }
+
+        return $statement->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+    }
 }

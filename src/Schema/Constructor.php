@@ -31,7 +31,7 @@ class Constructor
         $this->pdo->exec($query);
     }
 
-    public function getTableConnection(string $name)
+    public function getTableConnection(string $name): \SqliteOrm\Connector
     {
         return new \SqliteOrm\Connector($name, $this->pdo);
     }
