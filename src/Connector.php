@@ -8,7 +8,7 @@ class Connector
     {
     }
 
-    public function insert(array $fieldValues)
+    public function insert(array $fieldValues): void
     {
         $fieldNames = array_keys($fieldValues);
 
@@ -27,8 +27,6 @@ class Connector
     # by one field
     public function find(array $field): array
     {
-        $result = [];
-
         $fieldName = array_keys($field)[0];
 
         $query = "SELECT * FROM $this->tableName WHERE $fieldName=:$fieldName";
@@ -40,5 +38,20 @@ class Connector
         }
 
         return $statement->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+    }
+
+    public function updateById(int $id, array $fieldValues): void
+    {
+        $fieldNames = array_keys($fieldValues);
+
+        $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
+            $result .= "$fieldName = :$fieldName,";
+            return $result;
+        });
+        $query = "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1) . " WHERE id=:id";
+
+        $statement = $this->pdo->prepare($query);
+
+        $statement->execute(array_merge(['id' => $id], $fieldValues));    
     }
 }
