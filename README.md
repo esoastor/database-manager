@@ -17,7 +17,8 @@
         $blueprint->number('number')->notNull(),
     ]);
 
-    $test = $constructor->getTableConnection('test');
+    $test = $constructor->getDatabase('test');
 
     $test->create(['login' => 'aaa', 'number' => 12]);
+    $test->where('login', 'hmmm')->get();
 ```
