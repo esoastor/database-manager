@@ -1,6 +1,6 @@
 <?php
 
-namespace SqliteOrm\Schema;
+namespace Database\Schema;
 
 #db fields
 class Blueprint

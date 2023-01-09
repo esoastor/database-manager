@@ -1,6 +1,6 @@
 <?php
 
-namespace SqliteOrm\Schema\Fields\Base;
+namespace Database\Schema\Fields\Base;
 
 trait NotNull {
     public function notNull()

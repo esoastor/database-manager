@@ -5,11 +5,11 @@
 
 
     use SqliteOrm\Schema\Blueprint;
-    use SqliteOrm\Schema\Constructor;
+    use SqliteOrm\Schema\SqliteConstructor;
 
     $blueprint = new Blueprint();
 
-    $constructor = new Constructor();
+    $constructor = new SqliteConstructor();
 
     $constructor->createTable('test', [
         $blueprint->id(),
@@ -19,5 +19,5 @@
 
     $test = $constructor->getTableConnection('test');
 
-    $test->insert(['login' => 'aaa', 'number' => 12]);
+    $test->create(['login' => 'aaa', 'number' => 12]);
 ```

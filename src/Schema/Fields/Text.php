@@ -1,6 +1,6 @@
 <?php
 
-namespace SqliteOrm\Schema\Fields;
+namespace Database\Schema\Fields;
 
 class Text extends Base\Field
 {

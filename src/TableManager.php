@@ -1,14 +1,17 @@
 <?php
 
-namespace SqliteOrm;
+namespace Database;
 
-class Connector
+class TableManager
 {
+    private QueryBuilder $queryBuilder;
+
     public function __construct(private string $tableName, private \PDO $pdo)
     {
+        $this->queryBuilder = new QueryBuilder($tableName, $pdo);
     }
 
-    public function insert(array $fieldValues): void
+    public function create(array $fieldValues): void
     {
         $fieldNames = array_keys($fieldValues);
 
@@ -24,20 +27,9 @@ class Connector
         $statement->execute($fieldValues);
     }
 
-    # by one field
-    public function find(array $field): array
+    public function where(...$conditions): QueryBuilder
     {
-        $fieldName = array_keys($field)[0];
-
-        $query = "SELECT * FROM $this->tableName WHERE $fieldName=:$fieldName";
-
-        $statement = $this->pdo->prepare($query);
-        
-        foreach ($field as $fieldName => $fieldValue) {
-            $statement->execute([$fieldName => $fieldValue]);
-        }
-
-        return $statement->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+        return $this->queryBuilder->where($conditions);
     }
 
     public function updateById(int $id, array $fieldValues): void

@@ -1,21 +1,11 @@
 <?php
 
-namespace SqliteOrm\Schema;
+namespace Database\Schema;
 
 #dbTable constructor;
-class Constructor
+abstract class Constructor
 {
-    private \PDO $pdo;
-
-    public function __construct(string $databasePath = 'sqlbase.sqlite')
-    {
-        try {
-            $this->pdo = new \PDO('sqlite:' . $databasePath);
-        } catch (\Throwable $error) {
-            echo "error: " . $error->getMessage();
-            die;
-        }
-    }
+    protected \PDO $pdo;
 
     public function createTable(string $name, array $fields) 
     {
@@ -31,8 +21,8 @@ class Constructor
         $this->pdo->exec($query);
     }
 
-    public function getTableConnection(string $name): \SqliteOrm\Connector
+    public function getPdoDriver(): \PDO
     {
-        return new \SqliteOrm\Connector($name, $this->pdo);
+        return $this->pdo;
     }
 }
