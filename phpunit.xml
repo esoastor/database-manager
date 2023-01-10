@@ -1,7 +1,8 @@
-<phpunit colors="true" bootstrap="vendor/autoload.php">
+<phpunit colors="true" stopOnFailure="false" bootstrap="vendor/autoload.php">
   <testsuites>
     <testsuite name="all">
       <file>tests/SqliteConstructorTest.php</file>
+      <file>tests/TableManagerTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>

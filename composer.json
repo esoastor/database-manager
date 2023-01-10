@@ -11,10 +11,10 @@
 	},
 	"autoload-dev": {
 		"psr-4": {
-			"Database\\Tests\\": "tests"
+			"Tests\\": "tests/"
 		}
 	},
 	"scripts": {
-		"test": "phpunit tests"
+		"test": "vendor/bin/phpunit  --colors=always tests"
 	}
 }

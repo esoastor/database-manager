@@ -1,31 +1,30 @@
 <?php
 
 use Database\Database;
+use Database\WhereBuilder;
 use Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
 use Database\Schema\SqliteConstructor;
 use Database\Schema\Fields\Base;
+use Database\TableManager;
 
 final class SqliteConstructorTest extends TestCase
 {
-    public function __construct()
+    public function __construct($name = null, array $data = [], $dataName = '')
     {
-        parent::__construct();
+        parent::__construct($name, $data, $dataName);
 
-        $this->testTableName = 'test';
-
-        try {
-            $this->blueprint = new Blueprint();
-            $this->constructor = new SqliteConstructor('test.sqlite');
-            $this->fields = [
-                $this->blueprint->id(),
-                $this->blueprint->text('title'),
-                $this->blueprint->number('status'),
-            ];
-        } catch (\Throwable $error)
-        {
-            echo "here";
-        }
+        $this->testTableName = 'test_table';
+        $this->databaseName = 'test.sqlite';
+        
+        $this->blueprint = new Blueprint();
+        $this->constructor = new SqliteConstructor($this->databaseName);
+        $this->fields = [
+            $this->blueprint->id(),
+            $this->blueprint->text('name'),
+            $this->blueprint->text('surename'),
+            $this->blueprint->number('age'),
+        ];
     }
 
     public function testAssertSqliteConstructorInstance(): void
@@ -36,6 +35,11 @@ final class SqliteConstructorTest extends TestCase
     public function testAssertDatabaseInstance(): void
     {
         $this->assertInstanceOf(Database::class, $this->constructor->getDatabase());
+    }
+
+    public function testAssertTableManagerInstance(): void
+    {
+        $this->assertInstanceOf(TableManager::class, $this->constructor->getDatabase()->table($this->testTableName));
     }
 
     public function testAssertPdoInstance(): void
@@ -56,12 +60,16 @@ final class SqliteConstructorTest extends TestCase
     }
 
     /**
-     * @depends testAssertFieldInstance
+     * @depends testAssertTableManagerInstance
      */
-    public function testAssertFieldInstance(): void
+    public function testAssertWhereBuilderInstance(): void
     {
-        foreach ($this->fields as $field) {
-            $this->assertInstanceOf(Base\Field::class, $field);
-        }
+        $this->assertInstanceOf(WhereBuilder::class, $this->constructor->getDatabase()->table($this->testTableName)->where('1', '2', '3'));
+    }
+
+    public function testTableCreation(): void
+    {
+        $this->expectNotToPerformAssertions();
+        $this->constructor->createTable($this->testTableName, $this->fields);
     }
 }
