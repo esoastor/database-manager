@@ -4,7 +4,7 @@ namespace Database\Schema\Fields;
 
 class Text extends Base\Field
 {
-    use Base\NotNull;
+    use Base\Nullable;
 
     protected string $type = 'TEXT';
     protected int $length = 255;

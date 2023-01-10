@@ -6,7 +6,7 @@ abstract class Field
 {
     protected string $name;
     protected string $type;
-    protected array $traits;
+    protected array $traits = ['NOT NULL'];
 
     public function __construct($name)
     {

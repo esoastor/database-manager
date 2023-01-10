@@ -1,0 +1,20 @@
+{
+	"name": "esoastor/database-manager",
+	"description": "Simple database manager",
+	"require-dev": {
+		"phpunit/phpunit": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Database\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"Database\\Tests\\": "tests"
+		}
+	},
+	"scripts": {
+		"test": "phpunit tests"
+	}
+}
