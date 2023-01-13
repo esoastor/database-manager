@@ -1,7 +1,7 @@
 <?php
 
 use Database\Database;
-use Database\WhereBuilder;
+use Database\Query\BaseQuery;
 use Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
 use Database\Schema\SqliteConstructor;
@@ -62,9 +62,9 @@ final class SqliteConstructorTest extends TestCase
     /**
      * @depends testAssertTableManagerInstance
      */
-    public function testAssertWhereBuilderInstance(): void
+    public function testAssertBaseQueryInstance(): void
     {
-        $this->assertInstanceOf(WhereBuilder::class, $this->constructor->getDatabase()->table($this->testTableName)->where('1', '2', '3'));
+        $this->assertInstanceOf(BaseQuery::class, $this->constructor->getDatabase()->table($this->testTableName)->count());
     }
 
     public function testTableCreation(): void

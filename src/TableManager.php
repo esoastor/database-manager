@@ -2,16 +2,17 @@
 
 namespace Database;
 
+use Database\Query;
+
 class TableManager
 {
-    private WhereBuilder $whereBuilder;
+    private QueryFactory $queryFactory;
 
-    private string $query = '';
     private array $bindingParams = [];
 
     public function __construct(private string $tableName, private \PDO $pdo)
     {
-        $this->whereBuilder = new WhereBuilder($this);
+        $this->queryFactory = new QueryFactory();
     }
 
     public function insert(array $fieldValues): void
@@ -29,73 +30,76 @@ class TableManager
         $statement->execute($fieldValues);
     }
 
-    public function count(): WhereBuilder
+    public function count(): Query\CountQuery
     {
-        $this->query = "SELECT COUNT(*) FROM $this->tableName";
-        return $this->whereBuilder;
+        $query = new Query\CountQuery($this, "SELECT COUNT (*) FROM $this->tableName");
+        $this->queryFactory->setQuery($query);
+        return $query;
     }
 
-    public function select(array $fields = []): WhereBuilder
+    public function select(array $fields = []): Query\SelectQuery
     {
-        $fields = $fields === [] ? '*' : substr(implode(', ' , $fields), 0, -1);
-        $this->query = "SELECT $fields FROM $this->tableName";
-        return $this->whereBuilder;
+
+        $fields = $fields === [] ? '*' : implode(', ' , $fields);
+        $query = new Query\SelectQuery($this, "SELECT $fields FROM $this->tableName");
+        $this->queryFactory->setQuery($query);
+        return $query;
     }
 
-    public function update(array $fieldValues): WhereBuilder
+    // public function update(array $fieldValues): BaseQueryBuilder
+    // {
+    //     $fieldValues = $this->addPrefixToFieldName('u', $fieldValues);
+    //     $fieldNames = array_keys($fieldValues);
+
+    //     $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
+    //         $result .= "$fieldName=:$fieldName,";
+    //         return $result;
+    //     });
+
+    //     $this->query = "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1);
+    //     $this->bindingParams = $fieldValues;
+
+    //     return $this->whereBuilder;
+    // }
+
+    public function execute(): mixed
     {
-        $fieldValues = $this->addPrefixToFieldName('u', $fieldValues);
-        $fieldNames = array_keys($fieldValues);
+        $query = $this->queryFactory->getQuery();
 
-        $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
-            $result .= "$fieldName=:$fieldName,";
-            return $result;
-        });
+        $whereStatement = $query->toString();
 
-        $this->query = "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1);
-        $this->bindingParams = $fieldValues;
+        $queryText = $query->getQueryText();
+        $queryText .= $whereStatement !== '' ? " $whereStatement;" : ';';
 
-        return $this->whereBuilder;
-    }
+        $statement = $this->pdo->prepare($queryText);
 
-    public function where(...$conditions): WhereBuilder
-    {
-        return $this->whereBuilder->where($conditions);
-    }
+        $queryValues = $query->getValues();
 
-    public function execute()
-    {
-        $whereStatement = $this->whereBuilder->toString();
-
-        $query = "$this->query $this->tableName $whereStatement";
-
-        $statement = $this->pdo->prepare($query);
-        
-        if (!empty($this->bindingParams) || !empty($this->whereBuilder->getValues()))
+        if (!empty($this->bindingParams) || !empty($queryValues))
         {
-            $bindingParams = array_merge($this?->whereBuilder->getValues(), $this?->bindingParams);
+            $bindingParams = array_merge($queryValues, $this?->bindingParams);
             foreach ($bindingParams as $fieldName => $fieldValue) {
-                $statement->bindParam(':'.$fieldName, $fieldValue);
+                $statement->bindValue($fieldName, $fieldValue);
             }
         } 
 
         $statement->execute();
 
-        $this->clearWhereBuilder();
+        $this->clearBaseQueryBuilder();
         $this->clearQueryData();
 
-        return $statement->fetchAll(\PDO::FETCH_ASSOC) ?: [];
+        return $statement;
     }
 
-    protected function clearWhereBuilder(): void
+    protected function clearBaseQueryBuilder(): void
     {
-        $this->whereBuilder->resetValues();
-        $this->whereBuilder->resetCondition();
+        $query = $this->queryFactory->getQuery();
+        $query->resetValues();
+        $query->resetCondition();
     }
 
     protected function clearQueryData(): void
     {
-        $this->query = '';
         $this->bindingParams = [];
     }
 

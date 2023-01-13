@@ -1,19 +1,21 @@
 <?php
 
-namespace Database;
+namespace Database\Query;
 
-class WhereBuilder
+use Database\Errors;
+use Database\TableManager;
+
+abstract class BaseQuery
 {
-    private array $condition;
-    private array $values;
+    protected array $condition;
+    protected array $values;
 
-    public function __construct(private TableManager $tableManager)
+    public function __construct(protected TableManager $tableManager, protected string $queryText)
     {  
     }
 
     public function where(...$conditions): self
     {
-        $conditions = $conditions[0];
         foreach ($conditions as $conditionPart) {
             if (!is_string($conditionPart)) {
                 throw new Errors\InvalidArguments();
@@ -35,29 +37,33 @@ class WhereBuilder
 
     protected function addCondition($fieldName, $condition ,$fieldValue): void 
     {
-        $this->condition[] = "{$fieldName}{$condition}:{$fieldName}";
+        $this->condition[] = "{$fieldName} {$condition} :{$fieldName}";
         $this->values[$fieldName] = $fieldValue;
     }
 
-    protected function addThreeConditionsCondition():void 
+    public function execute(): mixed
     {
-
-    }
-
-    public function execute(): void
-    {
-        $this->tableManager->execute();
+        return $this->tableManager->execute()->fetchAll(\PDO::FETCH_ASSOC) ?: [];
     }
 
     public function toString(): string
     {
         $conditionString = '';
-        $count = 0;
-        foreach ($this->condition as $conditionElement) {
-            $conditionString .= $count === 0 ? "WHERE $conditionElement" : "AND $conditionElement";
-            $count ++;
+
+        if (isset($this->condition)) {
+            $count = 0;
+            foreach ($this->condition as $conditionElement) {
+                $conditionString .= $count === 0 ? "WHERE $conditionElement" : " AND $conditionElement";
+                $count ++;
+            }
         }
+
         return $conditionString;
+    }
+
+    public function getQueryText(): string
+    {
+        return $this->queryText ?? '';
     }
 
     public function getValues(): array
@@ -65,12 +71,12 @@ class WhereBuilder
         return $this->values ?? [];
     }
 
-    protected function resetValues(): void
+    public function resetValues(): void
     {
         $this->values = [];
     }
 
-    protected function resetCondition(): void
+    public function resetCondition(): void
     {
         $this->condition = [];
     }
