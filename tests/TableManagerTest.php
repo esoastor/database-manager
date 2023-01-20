@@ -55,4 +55,12 @@ final class TableManagerTest extends TestCase
         $this->assertEquals(count($this->table->select()->execute()[0]), 4);
         $this->assertEquals(count($this->table->select()->where('age', '>', '50')->execute()), 3);
     }
+
+    /**
+     * @depends testInsertAndCount
+     */
+    public function testUpdate(): void
+    {
+        $this->assertEquals($this->table->update(['name' => 'aaa'])->where('age', '>', '0')->execute(), true);
+    }
 }

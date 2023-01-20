@@ -46,21 +46,23 @@ class TableManager
         return $query;
     }
 
-    // public function update(array $fieldValues): BaseQueryBuilder
-    // {
-    //     $fieldValues = $this->addPrefixToFieldName('u', $fieldValues);
-    //     $fieldNames = array_keys($fieldValues);
+    public function update(array $fieldValues): Query\UpdateQuery
+    {
+        $fieldValues = $this->addPrefixToFieldName('u', $fieldValues);
+        $fieldNames = array_keys($fieldValues);
 
-    //     $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
-    //         $result .= "$fieldName=:$fieldName,";
-    //         return $result;
-    //     });
+        $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
+            $result .= "$fieldName=:$fieldName,";
+            return $result;
+        });
 
-    //     $this->query = "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1);
-    //     $this->bindingParams = $fieldValues;
+        $query = new Query\SelectQuery($this, "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1));
 
-    //     return $this->whereBuilder;
-    // }
+        $this->queryFactory->setQuery($query);
+        $this->bindingParams = $fieldValues;
+
+        return $query;
+    }
 
     public function execute(): mixed
     {
