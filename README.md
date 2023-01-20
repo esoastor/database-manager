@@ -19,6 +19,24 @@
 
     $test = $constructor->getDatabase('test');
 
-    $test->create(['login' => 'aaa', 'number' => 12]);
-    $test->where('login', 'hmmm')->get();
+    $insertData = [
+        ['name' => 'Abaddon', 'surename' => 'Hersen', 'age' => '57'],
+        ['name' => 'Jan', 'surename' => 'Vercauteren', 'age' => '51'],
+        ['name' => 'Heller', 'surename' => 'Match', 'age' => '61'],
+        ['name' => 'Herbert', 'surename' => 'Hosen', 'age' => '47']
+    ];
+    
+    foreach ($insertData as $row) {
+        $this->table->insert($row);
+    }
+
+    $test->count()->execute();
+    $test->count()->where('surename', '=', 'Vercauteren')->where('age', '>', '0')->execute();
+
+    $test->select(['name', 'age'])->execute();
+
+    $test->update(['name' => 'aaa'])->where('name', '=', 'Abaddon')->execute();
+
+    $test->delete()->where('surename', '=', 'Vercauteren')->execute();
+
 ```

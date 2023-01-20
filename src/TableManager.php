@@ -63,6 +63,13 @@ class TableManager
         return $query;
     }
 
+    public function delete(): Query\DeleteQuery
+    {
+        $query = new Query\DeleteQuery($this, "DELETE FROM $this->tableName");
+        $this->queryFactory->setQuery($query);
+        return $query;
+    }
+
     public function execute(): mixed
     {
         $query = $this->queryFactory->getQuery();
