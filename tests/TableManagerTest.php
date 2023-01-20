@@ -39,8 +39,10 @@ final class TableManagerTest extends TestCase
         $this->assertEquals($this->table->count()->execute(), count($insertData));
         $this->assertEquals($this->table->count()->where('age', '>', '50')->execute(), 3);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->execute(), 1);
+        $this->assertEquals($this->table->count()->where('name', 'Jan')->execute(), 1);
         $this->assertEquals($this->table->count()->where('surename', '=', 'Vercauteren')->execute(), 1);
         $this->assertEquals($this->table->count()->where('surename', '=', 'Vercauteren')->where('age', '>', '0')->execute(), 1);
+        $this->assertEquals($this->table->count()->where('surename', 'Vercauteren')->where('age', '>', '0')->execute(), 1);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->where('surename', '=', 'Vercauteren')->where('age', '=', '51')->execute(), 1);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->where('age', '>', '80')->execute(), 0);
     }
