@@ -37,8 +37,8 @@ abstract class BaseQuery
 
     protected function addCondition($fieldName, $condition ,$fieldValue): void 
     {
-        $this->condition[] = "{$fieldName} {$condition} :{$fieldName}";
-        $this->values[$fieldName] = $fieldValue;
+        $this->condition[] = "{$fieldName} {$condition} :w_{$fieldName}";
+        $this->values['w_' . $fieldName] = $fieldValue;
     }
 
     public function execute(): mixed

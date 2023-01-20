@@ -48,7 +48,6 @@ class TableManager
 
     public function update(array $fieldValues): Query\UpdateQuery
     {
-        $fieldValues = $this->addPrefixToFieldName('u', $fieldValues);
         $fieldNames = array_keys($fieldValues);
 
         $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
@@ -56,7 +55,7 @@ class TableManager
             return $result;
         });
 
-        $query = new Query\SelectQuery($this, "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1));
+        $query = new Query\UpdateQuery($this, "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1));
 
         $this->queryFactory->setQuery($query);
         $this->bindingParams = $fieldValues;
@@ -103,14 +102,5 @@ class TableManager
     protected function clearQueryData(): void
     {
         $this->bindingParams = [];
-    }
-
-    protected function addPrefixToFieldName(string $prefix, array $fields): array
-    {
-        $updatedArray = [];
-        foreach ($fields as $key => $value) {
-            $updatedArray["$prefix" . '_' . "$key"] = $value;
-        }
-        return $updatedArray;
     }
 }

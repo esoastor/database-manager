@@ -32,9 +32,9 @@ final class TableManagerTest extends TestCase
             ['name' => 'Heller', 'surename' => 'Match', 'age' => '61'],
             ['name' => 'Herbert', 'surename' => 'Hosen', 'age' => '47']
         ];
-        // foreach ($insertData as $row) {
-        //     $this->table->insert($row);
-        // }
+        foreach ($insertData as $row) {
+            $this->table->insert($row);
+        }
 
         $this->assertEquals($this->table->count()->execute(), count($insertData));
         $this->assertEquals($this->table->count()->where('age', '>', '50')->execute(), 3);
@@ -61,6 +61,10 @@ final class TableManagerTest extends TestCase
      */
     public function testUpdate(): void
     {
-        $this->assertEquals($this->table->update(['name' => 'aaa'])->where('age', '>', '0')->execute(), true);
+        $this->table->update(['name' => 'aaa'])->where('name', '=', 'Abaddon')->execute();
+        $this->assertEquals($this->table->count()->where('name', '=', 'aaa')->execute(), 1);
+
+        $this->table->update(['name' => 'bbb'])->where('age', '>', '0')->execute();
+        $this->assertEquals($this->table->count()->where('name', '=', 'bbb')->execute(), 4);
     }
 }
