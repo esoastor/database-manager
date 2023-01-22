@@ -33,7 +33,7 @@ final class TableManagerTest extends TestCase
             ['name' => 'Herbert', 'surename' => 'Hosen', 'age' => '47']
         ];
         foreach ($insertData as $row) {
-            $this->table->insert($row);
+            $this->table->insert($row)->execute();
         }
 
         $this->assertEquals($this->table->count()->execute(), count($insertData));
