@@ -15,7 +15,7 @@ class TableManager
         $this->queryFactory = new QueryFactory();
     }
 
-    public function insert(array $fieldValues): void
+    public function insert(array $fieldValues): Query\InsertQuery
     {
         $fieldNames = array_keys($fieldValues);
 
@@ -25,9 +25,12 @@ class TableManager
             return $result;
         });
 
-        $query = "INSERT INTO $this->tableName (" . $fieldNamesString . ") VALUES (" . substr($fieldAnchorsString, 0, -1) . ");";
-        $statement = $this->pdo->prepare($query);
-        $statement->execute($fieldValues);
+        $query = new Query\InsertQuery($this, "INSERT INTO $this->tableName (" . $fieldNamesString . ") VALUES (" . substr($fieldAnchorsString, 0, -1) . ");");
+
+        $this->queryFactory->setQuery($query);
+        $this->bindingParams = $fieldValues;
+
+        return $query;
     }
 
     public function count(): Query\CountQuery
