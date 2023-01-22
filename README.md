@@ -20,14 +20,14 @@
     $test = $constructor->getDatabase('test');
 
     $insertData = [
-        ['name' => 'Abaddon', 'surename' => 'Hersen', 'age' => '57'],
+        ['name' => 'Robert', 'surename' => 'Wolders', 'age' => '57'],
         ['name' => 'Jan', 'surename' => 'Vercauteren', 'age' => '51'],
-        ['name' => 'Heller', 'surename' => 'Match', 'age' => '61'],
-        ['name' => 'Herbert', 'surename' => 'Hosen', 'age' => '47']
+        ['name' => 'Rutger', 'surename' => 'Hauer', 'age' => '61'],
+        ['name' => 'Herbert', 'surename' => 'West', 'age' => '47']
     ];
     
     foreach ($insertData as $row) {
-        $this->table->insert($row);
+        $this->table->insert($row)->execute();
     }
 
     $test->count()->execute();
