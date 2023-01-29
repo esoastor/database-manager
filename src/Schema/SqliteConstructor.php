@@ -6,10 +6,10 @@ use Database\Database;
 
 class SqliteConstructor extends Constructor
 {
-    public function __construct(string $databasePath = 'sqlbase.sqlite')
+    public function __construct(string $databaseName = 'sqlbase.sqlite')
     {
         try {
-            $this->pdo = new \PDO('sqlite:' . $databasePath);
+            $this->pdo = new \PDO('sqlite:' . $databaseName);
         } catch (\Throwable $error) {
             echo "error: " . $error->getMessage();
             die;
