@@ -3,20 +3,11 @@
 namespace Database\Schema;
 
 #db fields
-class Blueprint
+abstract class Blueprint
 {
-    public function id(string $name = 'id'): Fields\Id
-    {
-        return new Fields\Id($name);
-    }
+    abstract public function id(string $name = 'id'): Fields\Base\Id;
 
-    public function text(string $name): Fields\Text
-    {
-        return new Fields\Text($name);
-    }
+    abstract public function text(string $name): Fields\Base\Text;
 
-    public function number(string $name): Fields\Integer
-    {
-        return new Fields\Integer($name);
-    }
+    abstract public function number(string $name): Fields\Base\Integer;
 }

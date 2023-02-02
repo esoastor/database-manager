@@ -1,8 +1,8 @@
 <?php
 
-namespace Database\Schema\Fields;
+namespace Database\Schema\Fields\Base;
 
-class Id extends Base\Field
+abstract class Id extends Field
 {
     protected string $type = 'INTEGER';
     protected array $traits = ['PRIMARY KEY', 'AUTOINCREMENT'];

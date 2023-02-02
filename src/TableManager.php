@@ -6,13 +6,13 @@ use Database\Query;
 
 class TableManager
 {
-    private QueryFactory $queryFactory;
+    private QueryRepository $QueryRepository;
 
     private array $bindingParams = [];
 
     public function __construct(private string $tableName, private \PDO $pdo)
     {
-        $this->queryFactory = new QueryFactory();
+        $this->QueryRepository = new QueryRepository();
     }
 
     public function insert(array $fieldValues): Query\InsertQuery
@@ -27,7 +27,7 @@ class TableManager
 
         $query = new Query\InsertQuery($this, "INSERT INTO $this->tableName (" . $fieldNamesString . ") VALUES (" . substr($fieldAnchorsString, 0, -1) . ");");
 
-        $this->queryFactory->setQuery($query);
+        $this->QueryRepository->setQuery($query);
         $this->bindingParams = $fieldValues;
 
         return $query;
@@ -36,16 +36,16 @@ class TableManager
     public function count(): Query\CountQuery
     {
         $query = new Query\CountQuery($this, "SELECT COUNT (*) FROM $this->tableName");
-        $this->queryFactory->setQuery($query);
+        $this->QueryRepository->setQuery($query);
         return $query;
     }
 
     public function select(array $fields = []): Query\SelectQuery
     {
 
-        $fields = $fields === [] ? '*' : implode(', ' , $fields);
+        $fields = $fields === [] ? '*' : implode(', ', $fields);
         $query = new Query\SelectQuery($this, "SELECT $fields FROM $this->tableName");
-        $this->queryFactory->setQuery($query);
+        $this->QueryRepository->setQuery($query);
         return $query;
     }
 
@@ -53,14 +53,14 @@ class TableManager
     {
         $fieldNames = array_keys($fieldValues);
 
-        $fieldSetString = array_reduce($fieldNames, function($result, $fieldName) {
+        $fieldSetString = array_reduce($fieldNames, function ($result, $fieldName) {
             $result .= "$fieldName=:$fieldName,";
             return $result;
         });
 
         $query = new Query\UpdateQuery($this, "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1));
 
-        $this->queryFactory->setQuery($query);
+        $this->QueryRepository->setQuery($query);
         $this->bindingParams = $fieldValues;
 
         return $query;
@@ -69,13 +69,13 @@ class TableManager
     public function delete(): Query\DeleteQuery
     {
         $query = new Query\DeleteQuery($this, "DELETE FROM $this->tableName");
-        $this->queryFactory->setQuery($query);
+        $this->QueryRepository->setQuery($query);
         return $query;
     }
 
     public function execute(): mixed
     {
-        $query = $this->queryFactory->getQuery();
+        $query = $this->QueryRepository->getQuery();
 
         $whereStatement = $query->toString();
 
@@ -104,7 +104,7 @@ class TableManager
 
     protected function clearBaseQueryBuilder(): void
     {
-        $query = $this->queryFactory->getQuery();
+        $query = $this->QueryRepository->getQuery();
         $query->resetValues();
         $query->resetCondition();
     }

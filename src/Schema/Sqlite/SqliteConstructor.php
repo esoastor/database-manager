@@ -1,10 +1,11 @@
 <?php
 
-namespace Database\Schema;
+namespace Database\Schema\Sqlite;
 
 use Database\Database;
+use Database\Schema;
 
-class SqliteConstructor extends Constructor
+class SqliteConstructor extends Schema\Constructor
 {
     public function __construct(string $databaseName = 'sqlbase.sqlite')
     {
@@ -19,5 +20,10 @@ class SqliteConstructor extends Constructor
     public function getDatabase(): Database
     {
         return new Database($this->pdo);
+    }
+
+    public function getBlueprintBuilder(): Schema\Blueprint
+    {
+        return new SqliteBlueprint();
     }
 }

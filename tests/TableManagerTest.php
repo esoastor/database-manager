@@ -1,8 +1,7 @@
 <?php
 
-use Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
-use Database\Schema\SqliteConstructor;
+use Database\Schema\Sqlite\SqliteConstructor;
 
 final class TableManagerTest extends TestCase
 {
@@ -13,8 +12,8 @@ final class TableManagerTest extends TestCase
         $this->testTableName = 'test_table';
         $this->databaseName = 'test.sqlite';
 
-        $this->blueprint = new Blueprint();
         $this->constructor = new SqliteConstructor('test.sqlite');
+        $this->blueprint =  $this->constructor->getBlueprintBuilder();
 
         $fields = ['id', 'name', 'surename', 'age'];
     }

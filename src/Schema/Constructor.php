@@ -25,4 +25,6 @@ abstract class Constructor
     {
         return $this->pdo;
     }
+
+    abstract public function getBlueprintBuilder(): Blueprint;
 }

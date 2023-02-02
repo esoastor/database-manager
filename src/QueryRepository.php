@@ -3,7 +3,7 @@ namespace Database;
 
 use Database\Query\BaseQuery;
 
-class QueryFactory
+class QueryRepository
 {
     private BaseQuery $query;
 

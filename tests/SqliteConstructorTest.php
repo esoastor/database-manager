@@ -4,7 +4,7 @@ use Database\Database;
 use Database\Query\BaseQuery;
 use Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
-use Database\Schema\SqliteConstructor;
+use Database\Schema\Sqlite\SqliteConstructor;
 use Database\Schema\Fields\Base;
 use Database\TableManager;
 
@@ -17,8 +17,8 @@ final class SqliteConstructorTest extends TestCase
         $this->testTableName = 'test_table';
         $this->databaseName = 'test.sqlite';
         
-        $this->blueprint = new Blueprint();
         $this->constructor = new SqliteConstructor($this->databaseName);
+        $this->blueprint =  $this->constructor->getBlueprintBuilder();
         $this->fields = [
             $this->blueprint->id(),
             $this->blueprint->text('name'),

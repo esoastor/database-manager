@@ -1,10 +1,10 @@
 <?php
 
-namespace Database\Schema\Fields;
+namespace Database\Schema\Fields\Base;
 
-class Text extends Base\Field
+abstract class Text extends Field
 {
-    use Base\Nullable;
+    use Nullable;
 
     protected string $type = 'TEXT';
     protected int $length = 255;

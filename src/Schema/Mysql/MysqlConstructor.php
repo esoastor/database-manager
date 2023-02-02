@@ -1,10 +1,11 @@
 <?php
 
-namespace Database\Schema;
+namespace Database\Schema\Mysql;
 
 use Database\Database;
+use Database\Schema;
 
-class MysqlConstructor extends Constructor
+class MysqlConstructor extends Schema\Constructor
 {
     public function __construct(string $host, string $databaseName, string $username, string $password)
     {
@@ -19,5 +20,11 @@ class MysqlConstructor extends Constructor
     public function getDatabase(): Database
     {
         return new Database($this->pdo);
+    }
+
+    
+    public function getBlueprintBuilder(): Schema\Blueprint
+    {
+        return new MysqlBlueprint();
     }
 }
