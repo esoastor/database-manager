@@ -3,13 +3,10 @@
 ```
     require_once __DIR__ . '/vendor/autoload.php';
 
-
-    use SqliteOrm\Schema\Blueprint;
-    use SqliteOrm\Schema\SqliteConstructor;
-
-    $blueprint = new Blueprint();
+    use SqliteOrm\Schema\Sqlite\SqliteConstructor;
 
     $constructor = new SqliteConstructor();
+    $blueprint = $constructor->getBlueprintBuilder();
 
     $constructor->createTable('test', [
         $blueprint->id(),
