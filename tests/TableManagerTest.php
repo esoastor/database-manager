@@ -63,13 +63,16 @@ final class TableManagerTest extends TestCase
      */
     public function testUpdate(): void
     {
-        $this->table->update(['name' => 'aaa'])->where('name', '=', 'Abaddon')->execute();
+        $this->table->update(['name' => 'aaa'])->where('name', '=', 'Herbert')->execute();
         $this->assertEquals($this->table->count()->where('name', '=', 'aaa')->execute(), 1);
 
         $this->table->update(['name' => 'bbb'])->where('age', '>', '0')->execute();
         $this->assertEquals($this->table->count()->where('name', '=', 'bbb')->execute(), 4);
     }
 
+    /**
+     * @depends testUpdate
+     */
     public function testDelete(): void
     {
         $this->table->delete()->where('surename', '=', 'Vercauteren')->execute();
