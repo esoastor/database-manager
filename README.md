@@ -1,5 +1,7 @@
 ## Example ##
 
+Sqlite & Mysql now
+
 ```
     require_once __DIR__ . '/vendor/autoload.php';
 
@@ -14,7 +16,7 @@
     $constructor->createTable('test', [
         $blueprint->id(),
         $blueprint->text('login')->length(50)->notNull(),
-        $blueprint->number('number')->notNull(),
+        $blueprint->integer('number')->notNull(),
     ]);
 
     $test = $constructor->getDatabase('test');
@@ -40,3 +42,6 @@
     $test->delete()->where('surename', '=', 'Vercauteren')->execute();
 
 ```
+### Tests ###
+
+run docker-compose-unittest.yml, check logs of database_manager
