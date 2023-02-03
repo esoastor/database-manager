@@ -35,7 +35,10 @@ class TableManager
 
     public function count(): Query\CountQuery
     {
-        $query = new Query\CountQuery($this, "SELECT COUNT (*) FROM $this->tableName");
+        $query = new Query\CountQuery($this, "SELECT COUNT(*) FROM $this->tableName");
+
+        echo ("SELECT COUNT(*) FROM $this->tableName;");
+        echo PHP_EOL;
         $this->QueryRepository->setQuery($query);
         return $query;
     }

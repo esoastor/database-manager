@@ -12,10 +12,10 @@ abstract class Constructor
         $query = "CREATE TABLE IF NOT EXISTS $name (";
         foreach($fields as $field) {
             if ($field instanceof Fields\Base\Field) {
-                $query .= $field->render() . ',';
+                $query .= $field->render() . ', ';
             }
         }
-        $query = substr($query, 0, -1);
+        $query = substr($query, 0, -2);
         $query .= ');';
 
         $this->pdo->exec($query);

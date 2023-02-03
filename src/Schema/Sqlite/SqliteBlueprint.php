@@ -5,7 +5,7 @@ namespace Database\Schema\Sqlite;
 use Database\Schema\Blueprint;
 use Database\Schema\Fields;
 
-class SqliteBlueprint extends Blueprint
+class SqliteBlueprint implements Blueprint
 {
     public function id(string $name = 'id'): Fields\Base\Id
     {
@@ -17,7 +17,7 @@ class SqliteBlueprint extends Blueprint
         return new Fields\Sqlite\Text($name);
     }
 
-    public function number(string $name): Fields\Base\Integer
+    public function integer(string $name): Fields\Base\Integer
     {
         return new Fields\Sqlite\Integer($name);
     }

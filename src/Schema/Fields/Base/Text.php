@@ -6,8 +6,8 @@ abstract class Text extends Field
 {
     use Nullable;
 
-    protected string $type = 'TEXT';
-    protected int $length = 255;
+    protected string $type;
+    protected int $length;
 
     public function length(int $length)
     {

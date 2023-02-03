@@ -6,7 +6,8 @@ abstract class Field
 {
     protected string $name;
     protected string $type;
-    protected array $traits = ['NOT NULL'];
+    protected array $traits = [];
+    protected string $notNullTrait = 'NOT NULL';
 
     public function __construct($name)
     {
@@ -15,6 +16,9 @@ abstract class Field
 
     public function render(): string
     {
-        return "$this->name $this->type " . implode(' ', $this->traits);
+        $queryString =  "$this->name $this->type";
+        $queryString .=  $this->notNullTrait ? ' ' .  $this->notNullTrait : '';
+        $queryString .= !empty($this->traits) ? ' ' . implode(' ', $this->traits) : '';
+        return $queryString;
     }
 }

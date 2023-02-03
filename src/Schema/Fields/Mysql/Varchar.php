@@ -5,10 +5,10 @@ namespace Database\Schema\Fields\Mysql;
 use Database\Schema\Fields\Base;
 use Database\Errors;
 
-class Text extends Base\Text
+class Varchar extends Base\Text
 {
-    private const MAX_LENGTH = 65535;
-    protected string $type = 'TEXT';
+    private const MAX_LENGTH = 255;
+    protected string $type = 'VARCHAR';
     protected int $length = 255;
 
 
