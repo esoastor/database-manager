@@ -2,7 +2,9 @@
   <testsuites>
     <testsuite name="all">
       <file>tests/SqliteConstructorTest.php</file>
-      <file>tests/TableManagerTest.php</file>
+      <file>tests/MysqlConstructorTest.php</file>
+      <file>tests/TableManagerSqliteTest.php</file>
+      <file>tests/TableManagerMysqlTest.php</file>
     </testsuite>
   </testsuites>
 </phpunit>
