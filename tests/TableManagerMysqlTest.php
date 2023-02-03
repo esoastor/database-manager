@@ -1,21 +1,28 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Database\Schema\Sqlite\SqliteConstructor;
+use Database\Schema\Mysql\MysqlConstructor;
 
-final class TableManagerTest extends TestCase
+final class TableManagerMysqlTest extends TestCase
 {
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
+        $this->host = 'db:3306';
+        $this->username = 'user'; 
+        $this->password = 'aaa123';
+        $this->databaseName = 'example';
         $this->testTableName = 'test_table';
-        $this->databaseName = 'test.sqlite';
-
-        $this->constructor = new SqliteConstructor('test.sqlite');
+        
+        $this->constructor = new MysqlConstructor($this->host, $this->databaseName, $this->username, $this->password);
         $this->blueprint =  $this->constructor->getBlueprintBuilder();
-
-        $fields = ['id', 'name', 'surename', 'age'];
+        $this->fields = [
+            $this->blueprint->id(),
+            $this->blueprint->varchar('name'),
+            $this->blueprint->varchar('surename'),
+            $this->blueprint->tinyInteger('age'),
+        ];
     }
 
     public function setUp(): void

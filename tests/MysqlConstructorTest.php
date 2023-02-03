@@ -4,32 +4,35 @@ use Database\Database;
 use Database\Query\BaseQuery;
 use Database\Schema\Blueprint;
 use PHPUnit\Framework\TestCase;
-use Database\Schema\Sqlite\SqliteConstructor;
+use Database\Schema\Mysql\MysqlConstructor;
 use Database\Schema\Fields\Base;
 use Database\TableManager;
 
-final class SqliteConstructorTest extends TestCase
+final class MysqlConstructorTest extends TestCase
 {
     public function __construct($name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
 
+        $this->host = 'db:3306';
+        $this->username = 'user'; 
+        $this->password = 'aaa123';
+        $this->databaseName = 'example';
         $this->testTableName = 'test_table';
-        $this->databaseName = 'test.sqlite';
         
-        $this->constructor = new SqliteConstructor($this->databaseName);
+        $this->constructor = new MysqlConstructor($this->host, $this->databaseName, $this->username, $this->password);
         $this->blueprint =  $this->constructor->getBlueprintBuilder();
         $this->fields = [
             $this->blueprint->id(),
-            $this->blueprint->text('name'),
-            $this->blueprint->text('surename'),
-            $this->blueprint->integer('age'),
+            $this->blueprint->varchar('name'),
+            $this->blueprint->varchar('surename'),
+            $this->blueprint->tinyInteger('age'),
         ];
     }
 
     public function testAssertSqliteConstructorInstance(): void
     {
-        $this->assertInstanceOf(SqliteConstructor::class, $this->constructor);
+        $this->assertInstanceOf(MysqlConstructor::class, $this->constructor);
     }
 
     public function testAssertDatabaseInstance(): void
