@@ -3,7 +3,6 @@
 namespace Database\Schema\Fields\Mysql;
 
 use Database\Schema\Fields\Base;
-use Database\Errors;
 
 class Text extends Base\Text
 {
@@ -15,7 +14,7 @@ class Text extends Base\Text
     public function render(): string
     {
         if ($this->length > self::MAX_LENGTH) {
-            throw new Errors\InvalidArguments();
+            throw new \Exception();
         }
         return parent::render();
     }

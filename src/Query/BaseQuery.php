@@ -18,7 +18,7 @@ abstract class BaseQuery
     {
         foreach ($conditions as $conditionPart) {
             if (!is_string($conditionPart)) {
-                throw new Errors\InvalidArguments();
+                throw new Errors\InvalidWhereArguments();
             }
         }
 
@@ -29,13 +29,13 @@ abstract class BaseQuery
         } elseif ($conditionsCount === 3) {
             $this->addCondition($conditions[0], $conditions[1], $conditions[2]);
         } else {
-            throw new Errors\InvalidArguments();
+            throw new Errors\InvalidWhereArguments();
         }
 
         return $this;
     }
 
-    protected function addCondition($fieldName, $condition ,$fieldValue): void 
+    protected function addCondition(string $fieldName, string $condition, string $fieldValue): void 
     {
         $this->condition[] = "{$fieldName} {$condition} :w_{$fieldName}";
         $this->values['w_' . $fieldName] = $fieldValue;

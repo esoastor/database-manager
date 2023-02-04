@@ -3,20 +3,23 @@
 namespace Database;
 
 use Database\Query;
+use Database\Errors\QueryNotEmpty;
 
 class TableManager
 {
-    private QueryRepository $QueryRepository;
+    private QueryRepository $queryRepository;
 
     private array $bindingParams = [];
 
     public function __construct(private string $tableName, private \PDO $pdo)
     {
-        $this->QueryRepository = new QueryRepository();
+        $this->queryRepository = new QueryRepository();
     }
 
     public function insert(array $fieldValues): Query\InsertQuery
     {
+        $this->checkIfQueryEmpty();
+
         $fieldNames = array_keys($fieldValues);
 
         $fieldNamesString = implode(',', $fieldNames);
@@ -27,7 +30,7 @@ class TableManager
 
         $query = new Query\InsertQuery($this, "INSERT INTO $this->tableName (" . $fieldNamesString . ") VALUES (" . substr($fieldAnchorsString, 0, -1) . ");");
 
-        $this->QueryRepository->setQuery($query);
+        $this->queryRepository->setQuery($query);
         $this->bindingParams = $fieldValues;
 
         return $query;
@@ -35,25 +38,28 @@ class TableManager
 
     public function count(): Query\CountQuery
     {
+        $this->checkIfQueryEmpty();
+
         $query = new Query\CountQuery($this, "SELECT COUNT(*) FROM $this->tableName");
 
-        echo ("SELECT COUNT(*) FROM $this->tableName;");
-        echo PHP_EOL;
-        $this->QueryRepository->setQuery($query);
+        $this->queryRepository->setQuery($query);
         return $query;
     }
 
     public function select(array $fields = []): Query\SelectQuery
     {
+        $this->checkIfQueryEmpty();
 
         $fields = $fields === [] ? '*' : implode(', ', $fields);
         $query = new Query\SelectQuery($this, "SELECT $fields FROM $this->tableName");
-        $this->QueryRepository->setQuery($query);
+        $this->queryRepository->setQuery($query);
         return $query;
     }
 
     public function update(array $fieldValues): Query\UpdateQuery
     {
+        $this->checkIfQueryEmpty();
+
         $fieldNames = array_keys($fieldValues);
 
         $fieldSetString = array_reduce($fieldNames, function ($result, $fieldName) {
@@ -63,7 +69,7 @@ class TableManager
 
         $query = new Query\UpdateQuery($this, "UPDATE $this->tableName SET " . substr($fieldSetString, 0, -1));
 
-        $this->QueryRepository->setQuery($query);
+        $this->queryRepository->setQuery($query);
         $this->bindingParams = $fieldValues;
 
         return $query;
@@ -71,14 +77,23 @@ class TableManager
 
     public function delete(): Query\DeleteQuery
     {
+        $this->checkIfQueryEmpty();
+
         $query = new Query\DeleteQuery($this, "DELETE FROM $this->tableName");
-        $this->QueryRepository->setQuery($query);
+        $this->queryRepository->setQuery($query);
         return $query;
+    }
+
+    protected function checkIfQueryEmpty(): void
+    {
+        if(!$this->queryRepository->isEmpty()) {
+            throw new QueryNotEmpty();
+        }
     }
 
     public function execute(): mixed
     {
-        $query = $this->QueryRepository->getQuery();
+        $query = $this->queryRepository->getQuery();
 
         $whereStatement = $query->toString();
 
@@ -99,20 +114,21 @@ class TableManager
 
         $statement->execute();
 
-        $this->clearBaseQueryBuilder();
-        $this->clearQueryData();
+        $this->clearQuery();
+        $this->clearBindingParams();
+        $this->queryRepository->unsetQuery();
 
         return $statement;
     }
 
-    protected function clearBaseQueryBuilder(): void
+    protected function clearQuery(): void
     {
-        $query = $this->QueryRepository->getQuery();
+        $query = $this->queryRepository->getQuery();
         $query->resetValues();
         $query->resetCondition();
     }
 
-    protected function clearQueryData(): void
+    protected function clearBindingParams(): void
     {
         $this->bindingParams = [];
     }

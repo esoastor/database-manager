@@ -15,7 +15,7 @@ class Varchar extends Base\Text
     public function render(): string
     {
         if ($this->length > self::MAX_LENGTH) {
-            throw new Errors\InvalidArguments();
+            throw new \Exception();
         }
         return parent::render();
     }
