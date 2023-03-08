@@ -3,7 +3,7 @@
 namespace Database\Schema\Fields\Mysql;
 
 use Database\Schema\Fields\Base;
-use Database\Errors;
+use Database\Errors\InvalidLength;
 
 class Varchar extends Base\Text
 {
@@ -15,7 +15,7 @@ class Varchar extends Base\Text
     public function render(): string
     {
         if ($this->length > self::MAX_LENGTH) {
-            throw new \Exception();
+            throw new InvalidLength(self::MAX_LENGTH);
         }
         return parent::render();
     }
