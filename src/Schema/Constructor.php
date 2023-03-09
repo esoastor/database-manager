@@ -26,5 +26,11 @@ abstract class Constructor
         return $this->pdo;
     }
 
+    public function dropTable(string $tableName)
+    {
+        $query = "DROP TABLE $tableName";
+        $this->pdo->exec($query);
+    }
+    
     abstract public function getBlueprintBuilder(): Blueprint;
 }
