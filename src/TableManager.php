@@ -125,7 +125,7 @@ class TableManager
     {
         $query = $this->queryRepository->getQuery();
         $query->resetValues();
-        $query->resetCondition();
+        $query->resetConditions();
     }
 
     protected function clearBindingParams(): void

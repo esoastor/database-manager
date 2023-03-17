@@ -28,7 +28,7 @@ abstract class Constructor
 
     public function dropTable(string $tableName)
     {
-        $query = "DROP TABLE $tableName";
+        $query = "DROP TABLE IF EXISTS {$tableName}";
         $this->pdo->exec($query);
     }
     
