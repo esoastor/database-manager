@@ -16,6 +16,7 @@ final class TableManagerMysqlTest extends TestCase
         $this->testTableName = 'test_table';
         
         $this->constructor = new MysqlConstructor($this->host, $this->databaseName, $this->username, $this->password);
+        $this->constructor->dropTable($this->testTableName);
         $this->blueprint =  $this->constructor->getBlueprintBuilder();
         $this->fields = [
             $this->blueprint->id(),
@@ -23,6 +24,7 @@ final class TableManagerMysqlTest extends TestCase
             $this->blueprint->varchar('surename'),
             $this->blueprint->tinyInteger('age'),
         ];
+        $this->constructor->createTable($this->testTableName, $this->fields);
     }
 
     public function setUp(): void
@@ -43,6 +45,10 @@ final class TableManagerMysqlTest extends TestCase
         }
 
         $this->assertEquals($this->table->count()->execute(), count($insertData));
+    }
+
+    public function testWhere(): void
+    {
         $this->assertEquals($this->table->count()->where('age', '>', '50')->execute(), 3);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->execute(), 1);
         $this->assertEquals($this->table->count()->where('name', 'Jan')->execute(), 1);
@@ -51,6 +57,13 @@ final class TableManagerMysqlTest extends TestCase
         $this->assertEquals($this->table->count()->where('surename', 'Vercauteren')->where('age', '>', '0')->execute(), 1);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->where('surename', '=', 'Vercauteren')->where('age', '=', '51')->execute(), 1);
         $this->assertEquals($this->table->count()->where('name', '=', 'Jan')->where('age', '>', '80')->execute(), 0);
+    }
+
+    public function testWhereIn(): void
+    {
+        $this->assertEquals($this->table->count()->whereIn('name', ['Robert', 'Jan'])->execute(), 2);
+        $this->assertEquals($this->table->count()->whereIn('name', ['Jan', 'Hasbulla'])->whereIn('age', ['11', '51'])->execute(), 1);
+        $this->assertEquals($this->table->count()->whereIn('name', ['Sam', 'Hasbulla'])->execute(), 0);
     }
 
     /**
