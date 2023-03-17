@@ -4,41 +4,69 @@ namespace Database\Query;
 
 use Database\Errors;
 use Database\TableManager;
+use Database\Query\Conditions;
 
 abstract class BaseQuery
 {
-    protected array $condition;
+    protected array $conditions = [];
     protected array $values;
+    protected string $defaultCondition = '=';
 
     public function __construct(protected TableManager $tableManager, protected string $queryText)
     {  
     }
 
-    public function where(...$conditions): self
+    public function where(...$conditionPars): self
     {
-        foreach ($conditions as $conditionPart) {
+        foreach ($conditionPars as $conditionPart) {
             if (!is_string($conditionPart)) {
                 throw new Errors\InvalidWhereArguments();
             }
         }
 
-        $conditionsCount = count($conditions);
+        $conditionsPartsCount = count($conditionPars);
 
-        if ($conditionsCount === 2) {
-            $this->addCondition($conditions[0], '=', $conditions[1]);
-        } elseif ($conditionsCount === 3) {
-            $this->addCondition($conditions[0], $conditions[1], $conditions[2]);
+        $prefix = $this->getConditionsCount();
+
+        $fieldName = $conditionPars[0];
+        if ($conditionsPartsCount === 2) {
+            $condition = $this->defaultCondition;
+            $fieldValue = $conditionPars[1];
+        } elseif ($conditionsPartsCount === 3) {
+            $condition = $conditionPars[1];
+            $fieldValue = $conditionPars[2];
         } else {
             throw new Errors\InvalidWhereArguments();
         }
 
+        if ($prefix === 0) {
+            $condition = new Conditions\WhereCondition($fieldName, $condition, $prefix);
+        } else {
+            $condition = new Conditions\AndCondition($fieldName, $condition, $prefix);
+        }
+
+        $this->addCondition($condition);
+        $this->addValue("{$prefix}_{$fieldName}", $fieldValue);
+
         return $this;
     }
 
-    protected function addCondition(string $fieldName, string $condition, string $fieldValue): void 
+    public function whereIn(string $fieldName, array $values): self
     {
-        $this->condition[] = "{$fieldName} {$condition} :w_{$fieldName}";
-        $this->values['w_' . $fieldName] = $fieldValue;
+        foreach ($values as $key => $fieldValue) {
+            $prefix = $this->getConditionsCount();
+            if ($prefix === 0 && $key === 0) {
+                $condition = new Conditions\WhereCondition($fieldName, $this->defaultCondition, $prefix);
+            } elseif($prefix > 0 && $key === 0) {
+                $condition = new Conditions\AndCondition($fieldName, $this->defaultCondition, $prefix);
+            } else {
+                $condition = new Conditions\OrCondition($fieldName, $this->defaultCondition, $prefix);
+            }
+            $this->addCondition($condition);
+            $this->addValue("{$prefix}_{$fieldName}", $fieldValue);
+        }
+
+        return $this;
     }
 
     public function execute(): mixed
@@ -50,10 +78,10 @@ abstract class BaseQuery
     {
         $conditionString = '';
 
-        if (isset($this->condition)) {
+        if (isset($this->conditions)) {
             $count = 0;
-            foreach ($this->condition as $conditionElement) {
-                $conditionString .= $count === 0 ? "WHERE $conditionElement" : " AND $conditionElement";
+            foreach ($this->conditions as $condition) {
+                $conditionString .= $condition->toString() . ' ';
                 $count ++;
             }
         }
@@ -66,6 +94,11 @@ abstract class BaseQuery
         return $this->queryText ?? '';
     }
 
+    protected function addValue(string $key, string $value)
+    {
+        $this->values[$key] = $value;
+    }
+
     public function getValues(): array
     {
         return $this->values ?? [];
@@ -76,8 +109,18 @@ abstract class BaseQuery
         $this->values = [];
     }
 
-    public function resetCondition(): void
+    protected function addCondition(Conditions\BaseCondition $condition): void 
     {
-        $this->condition = [];
+        $this->conditions[] = $condition;
+    }
+
+    public function resetConditions(): void
+    {
+        $this->conditions = [];
+    }
+
+    protected function getConditionsCount(): int
+    {
+        return count($this->conditions);
     }
 }
