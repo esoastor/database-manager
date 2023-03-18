@@ -132,4 +132,10 @@ class TableManager
     {
         $this->bindingParams = [];
     }
+
+    public function getNextId(): string
+    {
+        $result = $this->pdo->query("SELECT MAX(id) FROM $this->tableName")->fetchAll(\PDO::FETCH_ASSOC)[0];
+        return (string) ((int) $result['MAX(id)'] + 1);
+    }
 }
