@@ -91,6 +91,20 @@ final class TableManagerMysqlTest extends TestCase
 
     /**
      * @depends testUpdate
+     * @depends testInsertAndCount
+     * @depends testSelect
+     */
+    public function testNextId(): void
+    {
+        $this->assertEquals($this->table->getNextId(), '5');
+        $this->table->insert(['name' => 'Horhe', 'surename' => 'Hermano', 'age' => '98'])->execute();
+        $this->assertEquals($this->table->getNextId(), '6');
+
+    }
+
+    /**
+     * @depends testUpdate
+     * @depends testNextId
      */
     public function testDelete(): void
     {
